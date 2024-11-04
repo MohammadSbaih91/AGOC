@@ -1,0 +1,25 @@
+﻿@model AGOC.ViewModels.SearchViewModel
+
+<form method="get" asp-action="Search" class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+    <div class="form-row row g-3 align-items-center">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="searchText" class="form-label">بحث برقم اللوحة أو الموديل</label>
+            <input type="text" class="form-control" id="searchText" name="searchText" value="@Model.SearchText" placeholder="أدخل رقم اللوحة أو الماركة" />
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <label for="vehicleTypeId" class="form-label">اختر نوع المركبة</label>
+            @Html.DropDownList("vehicleTypeId", new SelectList(new List<SelectListItem>
+            {
+            new SelectListItem { Text = "اختر نوع المركبة", Value = "0" },
+            new SelectListItem { Text = "مستأجرة", Value = "1", Selected = (Model.VehicleTypeId == 1) },
+            new SelectListItem { Text = "شخصية", Value = "2", Selected = (Model.VehicleTypeId == 2) }
+            }, "Value", "Text"), new { @class = "form-control", id = "vehicleTypeId" })
+        </div>
+
+        <div class="col-lg-2 col-md-6 col-sm-12 d-grid">
+            <label class="form-label d-none d-md-block">&nbsp;</label>
+            <button type="submit" class="btn btn-primary">بحث</button>
+        </div>
+    </div>
+</form>

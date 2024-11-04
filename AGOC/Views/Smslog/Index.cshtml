@@ -1,0 +1,47 @@
+﻿@model IEnumerable<AGOC.Models.Smslog>
+
+<h2 class="text-center my-4">سجل الرسائل</h2>
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger text-center">
+        <strong>Error:</strong> @ViewData["ErrorMessage"]
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        No SMS logs found.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered text-center">
+            <thead class="table">
+                <tr>
+                    <th>الرقم الوظيفي</th>
+                    <th>رقم الهاتف</th>
+                    <th>صيغة الرسالة</th>
+                    <th>الحالة</th>
+                    <th>تاريخ الارسال</th>
+                  
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model)
+                {
+                    <tr>
+                        <td>@log.EmpolyeeCode </td>
+                        <td>@log.PhoneNumber</td>
+                        <td>@log.Message</td>
+                        <td class="fw-bold text-@((log.Status == "Success") ? "success" : "danger")">@log.Status</td>
+                        <td>@log.SentOn?.ToString("dd-MM-yyyy")</td>
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

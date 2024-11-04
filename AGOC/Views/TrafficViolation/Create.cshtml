@@ -1,0 +1,178 @@
+﻿@model AGOC.ViewModels.TrafficViolationViewModel
+
+@{
+    ViewData["Title"] = "إدخال مخالفة مرورية";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">إضافة مخالفة مرورية</h2>
+
+    <form id="trafficViolationForm" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="LicensePlateNumber" class="control-label">رقم اللوحة</label>
+                    <input asp-for="LicensePlateNumber" class="form-control" />
+                    <span id="LicensePlateNumberError" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="EmployeeNumber" class="control-label">رقم الموظف</label>
+                    <input asp-for="EmployeeNumber" class="form-control" />
+                    <span id="EmployeeNumberError" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="LookupViolationTypeId" class="control-label">نوع المخالفة</label>
+                    <select asp-for="LookupViolationTypeId" class="form-control" id="LookupViolationTypeId">
+                        <option value="">اختر نوع المخالفة</option>
+                    </select>
+                    <span id="ViolationTypeIdError" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ViolationDate" class="control-label">تاريخ المخالفة</label>
+                    <input asp-for="ViolationDate" type="date" class="form-control" />
+                    <span id="ViolationDateError" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="FineAmount" class="control-label">مبلغ الغرامة</label>
+                    <input asp-for="FineAmount" class="form-control" />
+                    <span id="FineAmountError" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group text-center">
+            <input type="submit" value="حفظ" class="btn btn-primary" />
+            <a href="@Url.Action("Index")" class="btn btn-secondary">العودة إلى القائمة</a>
+        </div>
+    </form>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title" id="confirmationModalLabel">تأكيد إضافة المخالفة</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- The confirmation message will be dynamically inserted here -->
+                <p id="confirmationMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmButton" class="btn btn-primary">نعم</button>
+                <button type="button" class="btn btn-secondary close" data-dismiss="modal">لا</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Fetch violation types on page load
+        $.ajax({
+            url: '/LookupCommon/GetTrafficViolationTypes',
+            type: 'GET',
+            success: function (data) {
+                $.each(data, function (index, violationType) {
+                    $('#LookupViolationTypeId').append($('<option>', {
+                        value: violationType.id,
+                        text: violationType.violationType
+                    }));
+                });
+            },
+            error: function () {
+                alert('حدث خطأ أثناء جلب أنواع المخالفات.');
+            }
+        });
+
+        // Form submission validation
+        $('#trafficViolationForm').on('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            var isValid = true;
+
+            // Validate LicensePlateNumber
+            if (!$('#LicensePlateNumber').val()) {
+                isValid = false;
+                $('#LicensePlateNumberError').text('يرجى إدخال رقم اللوحة.');
+            } else {
+                $('#LicensePlateNumberError').text('');
+            }
+
+            // Validate EmployeeNumber
+            if (!$('#EmployeeNumber').val()) {
+                isValid = false;
+                $('#EmployeeNumberError').text('يرجى إدخال رقم الموظف.');
+            } else {
+                $('#EmployeeNumberError').text('');
+            }
+
+            // Validate LookupViolationTypeId
+            if (!$('#LookupViolationTypeId').val()) {
+                isValid = false;
+                $('#ViolationTypeIdError').text('يرجى اختيار نوع المخالفة.');
+            } else {
+                $('#ViolationTypeIdError').text('');
+            }
+
+            // Validate ViolationDate
+            if (!$('#ViolationDate').val()) {
+                isValid = false;
+                $('#ViolationDateError').text('يرجى إدخال تاريخ المخالفة.');
+            } else {
+                $('#ViolationDateError').text('');
+            }
+
+            // Validate FineAmount
+            if (!$('#FineAmount').val()) {
+                isValid = false;
+                $('#FineAmountError').text('يرجى إدخال مبلغ الغرامة.');
+            } else {
+                $('#FineAmountError').text('');
+            }
+
+            // If the form is valid, show the confirmation modal
+            if (isValid) {
+                var licensePlateNumber = $('#LicensePlateNumber').val();
+                var employeeNumber = $('#EmployeeNumber').val();
+
+                var confirmationMessage = `
+                        <div style="text-align:right;">
+                            <h4>هل أنت متأكد من إضافة هذه المخالفة؟</h4>
+                            <p><strong>رقم اللوحة:</strong> ${licensePlateNumber}</p>
+                            <p><strong>رقم الموظف:</strong> ${employeeNumber}</p>
+                        </div>
+                    `;
+                $('#confirmationMessage').html(confirmationMessage);
+                $('#confirmationModal').modal('show');
+            }
+        });
+
+        // Handle confirmation button click
+        $('#confirmButton').on('click', function () {
+            $('#trafficViolationForm').off('submit').submit(); // Submit the form after confirmation
+        });
+
+        // Close modal handler
+        $('.close').on('click', function () {
+            $('#confirmationModal').modal('hide');
+        });
+    });
+</script>

@@ -1,0 +1,191 @@
+﻿@model AGOC.Services.Pagination<AGOC.ViewModels.VehicleHandoverViewModel>
+@{
+    ViewData["Title"] = "تخصيص المركبات";
+    var isAdmin = User.IsInRole("Admin"); // Check if the user is an Admin
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">تسليم المركبات</h2>
+
+    <form method="get" asp-action="Search" class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+        <div class="form-row row g-3 align-items-center">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="searchText" class="form-label">بحث برقم اللوحة أو الموظف أو القسم</label>
+                <input type="text" class="form-control" id="searchText" name="searchText" value="@ViewData["SearchText"]" placeholder="أدخل نص البحث" />
+            </div>
+            <div class="col-lg-2 col-md-6 col-sm-12 d-grid">
+                <label class="form-label d-none d-md-block">&nbsp;</label>
+                <button type="submit" class="btn btn-primary">بحث</button>
+            </div>
+        </div>
+    </form>
+    <div class="d-flex justify-content-start mb-3" style="float:left">
+        <a href="@Url.Action("Create")" class="btn btn-primary">تخصيص مركبة</a>
+    </div>
+
+
+    <!-- Handover Grid -->
+    <form method="post" id="handoverForm" asp-action="Approve">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    @if (isAdmin)
+                    {
+                        <th>
+                            <input type="checkbox" id="selectAllCheckbox" />
+                        </th>
+                    }
+                    <th>رقم اللوحة للمركبة</th>
+                    <th>الموظف</th>
+                    <th>رقم الموظف</th>
+                    <th>القسم</th>
+                    <th>تاريخ التسليم</th>
+                    <th>الحالة</th>
+                    <th>الموافقة</th>
+                    <th class="text-center">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items.Count() > 0)
+                {
+                    @foreach (var handover in Model.Items)
+                    {
+                        <tr>
+                            @if (isAdmin && handover.IsApproved == 0)
+                            {
+                                <td>
+                                    <input type="checkbox" class="handoverCheckbox" name="selectedHandoverIds" value="@handover.Id" />
+                                </td>
+                            }
+                            else if (isAdmin)
+                            {
+                                <td>
+                                    <!-- Empty cell for alignment -->
+                                </td>
+                            }
+
+                            <td>@handover.LicensePlateNumber</td>
+                            <td>@handover.EmployeeName</td>
+                            <td>@handover.EmployeeCode</td>
+                            <td>@handover.EmployeeDepartment</td>
+                            <td>@handover.HandoverDate.ToString()</td>
+                            <td>@handover.Status</td>
+                            <td>
+                                @if (handover.IsApproved == 1)
+                                {
+                                    <span class="text-success">موافق عليه</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">غير موافق عليه</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <!-- Delete Button -->
+                                <button type="button" class="btn btn-danger cancel-button" data-id="@handover.Id">إلغاء التخصيص</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">لا توجد بيانات لعرضها</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Approve Button (Visible for Admins) -->
+        @if (isAdmin && Model.Items.Any(h => h.IsApproved == 0))
+        {
+            <div class="d-flex justify-content-end mb-3">
+                <button id="approveButton" class="btn btn-success" disabled>الموافقة</button>
+            </div>
+        }
+    </form>
+
+    <!-- Pagination -->
+    @await Html.PartialAsync("~/Views/Shared/PartialView/_Pagination.cshtml", Model)
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="cancelConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title" id="confirmationModalLabel">تأكيد إلغاء التخصيص</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                هل انت متأكد من إلغاء هذا التخصيص؟
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmCancelButton">نعم</button>
+                <button type="button" class="btn btn-secondary close" data-dismiss="modal">لا</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var handoverIdToCancel;
+
+            // Handle click on cancel button to open modal
+            $('.cancel-button').click(function () {
+                handoverIdToCancel = $(this).data('id');
+                $('#cancelConfirmationModal').modal('show');
+            });
+
+            $(".close").click(function () {
+                $('#cancelConfirmationModal').modal('hide');
+            });
+
+            // Handle click on confirm cancel button
+            $('#confirmCancelButton').click(function () {
+                $.ajax({
+                    url: '/Handover/Cancel/' + handoverIdToCancel,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (result) {
+                        $('#cancelConfirmationModal').modal('hide');
+                        location.reload(); // Refresh page after cancellation
+                    },
+                    error: function (xhr, status, error) {
+                        alert('حدث خطأ أثناء محاولة إلغاء التخصيص.');
+                        $('#cancelConfirmationModal').modal('hide');
+                    }
+                });
+            });
+
+            // Handle the select all checkbox
+            $('#selectAllCheckbox').change(function () {
+                var checked = $(this).prop('checked');
+                $('.handoverCheckbox').prop('checked', checked);
+                toggleApproveButton();
+            });
+
+            // Enable the approve button if any checkbox is selected
+            $('.handoverCheckbox').change(function () {
+                toggleApproveButton();
+            });
+
+            // Function to toggle the approve button
+            function toggleApproveButton() {
+                var anyChecked = $('.handoverCheckbox:checked').length > 0;
+                $('#approveButton').prop('disabled', !anyChecked);
+            }
+
+            // Submit the form when the approve button is clicked
+            $('#approveButton').click(function () {
+                $('#handoverForm').submit();
+            });
+        });
+    </script>
+}

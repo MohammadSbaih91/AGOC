@@ -1,0 +1,344 @@
+﻿@model AGOC.ViewModels.VehicleViewModel
+
+@{
+    ViewData["Title"] = "تعديل المركبة";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">تعديل المركبة</h2>
+
+    <!-- Display TempData message if it exists -->
+    @if (ViewData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @ViewData["ErrorMessage"]
+        </div>
+    }
+    <form id="editVehicleForm" asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>نوع المركبة</label>
+                    <div class="d-flex">
+                        <div class="form-check me-3">
+                            @Html.RadioButtonFor(model => model.VehicleTypeId, 1, new { @class = "form-check-input", id = "VehicleTypeRent" })
+                            <label class="form-check-label" for="VehicleTypeRent">مستأجرة</label>
+                        </div>
+                        <div class="form-check">
+                            @Html.RadioButtonFor(model => model.VehicleTypeId, 2, new { @class = "form-check-input", id = "VehicleTypePersonal" })
+                            <label class="form-check-label" for="VehicleTypePersonal">شخصية</label>
+                        </div>
+                    </div>
+                    <span id="vehicleTypeValidation" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="LicensePlateNumber" class="control-label">رقم اللوحة</label>
+                    <input asp-for="LicensePlateNumber" class="form-control" id="LicensePlateNumber" />
+                    <span id="licensePlateNumberValidation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="BrandId" class="control-label">نوع السيارة</label>
+                    <select asp-for="BrandId" class="form-control" id="Brand">
+                        <option value="">اختر نوع السيارة</option>
+                    </select>
+                    <input type="hidden" id="BrandText" name="Brand" value="@Model.Brand" />
+                    <span id="brandValidation" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ModelId" class="control-label">الموديل</label>
+                    <select asp-for="ModelId" class="form-control" id="Model">
+                        <option value="">اختر الموديل</option>
+                    </select>
+                    <input type="hidden" id="ModelText" name="Model" value="@Model.Model" />
+                    <span id="modelValidation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="CategoryId" class="control-label">الفئة</label>
+                    <select asp-for="CategoryId" class="form-control" id="Category">
+                        <option value="">اختر الفئة</option>
+                    </select>
+                    <input type="hidden" id="CategoryText" name="Category" value="@Model.Category" />
+                    <span id="categoryValidation" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Year" class="control-label">السنة</label>
+                    <input asp-for="Year" class="form-control" id="Year" />
+                    <span id="yearValidation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Color" class="control-label">اللون</label>
+                    @Html.DropDownListFor(model => model.Color, new List<SelectListItem>
+                    {
+                    new SelectListItem { Value = "أبيض", Text = "أبيض" },
+                    new SelectListItem { Value = "أسود", Text = "أسود" },
+                    new SelectListItem { Value = "فضي", Text = "فضي" },
+                    new SelectListItem { Value = "رمادي", Text = "رمادي" },
+                    new SelectListItem { Value = "أحمر", Text = "أحمر" },
+                    new SelectListItem { Value = "أزرق", Text = "أزرق" },
+                    new SelectListItem { Value = "أخضر", Text = "أخضر" },
+                    new SelectListItem { Value = "ذهبي", Text = "ذهبي" },
+                    new SelectListItem { Value = "برونزي", Text = "برونزي" },
+                    new SelectListItem { Value = "بني", Text = "بني" },
+                    new SelectListItem { Value = "كحلي", Text = "كحلي" },
+                    new SelectListItem { Value = "برتقالي", Text = "برتقالي" },
+                    new SelectListItem { Value = "وردي", Text = "وردي" },
+                    new SelectListItem { Value = "بيج", Text = "بيج" },
+                    new SelectListItem { Value = "بنفسجي", Text = "بنفسجي" }
+                    }, "اختر لونًا", new { @class = "form-control", @id = "Color" })
+                    <span id="colorValidation" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="PurchaseDate" class="control-label">تاريخ الاستأجار</label>
+                    <input asp-for="PurchaseDate" type="date" class="form-control" id="PurchaseDate" />
+                    <span id="purchaseDateValidation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="StatusId" class="control-label">الحالة</label>
+                    <select asp-for="StatusId" class="form-control" id="Status">
+                        <option value="">اختر الحالة</option>
+                    </select>
+                    <input type="hidden" id="StatusText" name="StatusText" value="@Model.StatusText" />
+                    <span id="statusValidation" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label asp-for="Notes" class="control-label">الملاحظات</label>
+                    <textarea asp-for="Notes" class="form-control" id="Notes"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group text-center">
+            <input type="submit" value="حفظ" class="btn btn-primary" />
+            <a href="@Url.Action("Index")" class="btn btn-secondary">العودة إلى القائمة</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        
+        // Decode HTML entities (for use with Razor values)
+        function decodeHtml(html) {
+            var txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        // Pre-selected values from Razor model
+        var selectedBrand = decodeHtml('@Model.Brand');
+        var selectedModel = decodeHtml('@Model.Model');
+        var selectedCategory = decodeHtml('@Model.Category');
+
+        // Fetch vehicle brands when the page loads
+        $.ajax({
+            url: '/LookupCommon/GetVehiclesLookupMain',
+            type: 'GET',
+            success: function (data) {
+                $.each(data, function (index, brand) {
+                    $('#Brand').append($('<option>', {
+                        value: brand.id,
+                        text: brand.description,
+                        selected: brand.description === selectedBrand
+                    }));
+                });
+                if (selectedBrand) {
+                    $('#Brand').trigger('change');  // Trigger Model population if there's a pre-selected brand
+                }
+            },
+            error: function () {
+                alert('حدث خطأ أثناء جلب أنواع السيارات.');
+            }
+        });
+
+        // Handle change event for the Brand dropdown
+        $('#Brand').on('change', function () {
+            var brandText = $(this).find("option:selected").text();
+            $('#BrandText').val(brandText); // Store the selected brand text
+
+            var brandId = $(this).val();
+            if (brandId) {
+                // Fetch models based on selected brand
+                $.ajax({
+                    url: '/LookupCommon/GetVehiclesLookupDetailsByLookMainId',
+                    type: 'GET',
+                    data: { id: brandId },
+                    success: function (data) {
+                        $('#Model').empty().append('<option value="">اختر الموديل</option>');
+                        $.each(data, function (index, model) {
+                            $('#Model').append($('<option>', {
+                                value: model.id,
+                                text: model.description,
+                                selected: model.description === selectedModel
+                            }));
+                        });
+                        if (selectedModel) {
+                            $('#Model').trigger('change');  // Trigger Category population if there's a pre-selected model
+                        }
+                    },
+                    error: function () {
+                        alert('حدث خطأ أثناء جلب الموديلات.');
+                    }
+                });
+            } else {
+                $('#Model').empty().append('<option value="">اختر الموديل</option>');
+            }
+        });
+
+        // Handle change event for the Model dropdown
+        $('#Model').on('change', function () {
+            var modelText = $(this).find("option:selected").text();
+            $('#ModelText').val(modelText);
+
+            var modelId = $(this).val();
+            if (modelId) {
+                // Fetch categories based on selected model
+                $.ajax({
+                    url: '/LookupCommon/GetVehicleCategoryLookups',
+                    type: 'GET',
+                    data: { id: modelId },
+                    success: function (data) {
+                        $('#Category').empty().append('<option value="">اختر الفئة</option>');
+                        $.each(data, function (index, category) {
+                            $('#Category').append($('<option>', {
+                                value: category.id,
+                                text: category.description,
+                                selected: category.description === selectedCategory
+                            }));
+                        });
+
+                        if (selectedCategory) {
+                            $('#Category').trigger('change'); // If there's a pre-selected category, trigger change event
+                        }
+                    },
+                    error: function () {
+                        alert('حدث خطأ أثناء جلب الفئات.');
+                    }
+                });
+            } else {
+                $('#Category').empty().append('<option value="">اختر الفئة</option>');
+            }
+        });
+
+        // Handle change event for the Category dropdown
+        $('#Category').on('change', function () {
+            var categoryText = $(this).find("option:selected").text();
+            $('#CategoryText').val(categoryText); // Store the selected category text
+        });
+
+        // Fetch statuses when the page loads
+        $.ajax({
+            url: '/LookupCommon/GetLookupVehicleStatus',
+            type: 'GET',
+            success: function (data) {
+                $('#Status').empty().append('<option value="">اختر الحالة</option>');
+                $.each(data, function (index, status) {
+                    $('#Status').append($('<option>', {
+                        value: status.id,
+                        text: status.status,
+                        selected: status.status === selectedStatus
+                    }));
+                });
+            },
+            error: function () {
+                alert('حدث خطأ أثناء جلب حالات المركبة.');
+            }
+        });
+
+        // Handle change event for the Status dropdown
+        $('#Status').on('change', function () {
+            var statusText = $(this).find("option:selected").text();
+            $('#StatusText').val(statusText);
+        });
+
+        // Form submission validation (same as Create view)
+        $('#editVehicleForm').on('submit', function (e) {
+            var isValid = true;
+
+            // Validate ModelId
+            if (!$('#Model').val()) {
+                isValid = false;
+                $('#modelValidation').text('يرجى إدخال الموديل.');
+            } else {
+                $('#modelValidation').text('');
+            }
+
+            // Validate BrandId
+            if (!$('#Brand').val()) {
+                isValid = false;
+                $('#brandValidation').text('يرجى إدخال نوع السيارة.');
+            } else {
+                $('#brandValidation').text('');
+            }
+
+            // Validate Color
+            if (!$('#Color').val()) {
+                isValid = false;
+                $('#colorValidation').text('يرجى إدخال اللون.');
+            } else {
+                $('#colorValidation').text('');
+            }
+
+            // Validate LicensePlateNumber
+            if (!$('#LicensePlateNumber').val()) {
+                isValid = false;
+                $('#licensePlateNumberValidation').text('يرجى إدخال رقم اللوحة.');
+            } else {
+                $('#licensePlateNumberValidation').text('');
+            }
+
+            // Validate PurchaseDate
+            if (!$('#PurchaseDate').val()) {
+                isValid = false;
+                $('#purchaseDateValidation').text('يرجى إدخال تاريخ الشراء.');
+            } else {
+                $('#purchaseDateValidation').text('');
+            }
+
+            // Validate Condition
+            if (!$('#Year').val()) {
+                isValid = false;
+                $('#yearValidation').text('يرجى إدخال السنة.');
+            } else {
+                $('#yearValidation').text('');
+            }
+
+            // Prevent form submission if validation fails
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>

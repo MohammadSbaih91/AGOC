@@ -1,0 +1,307 @@
+﻿@model AGOC.ViewModels.VehicleHandoverViewModel
+
+@{
+    ViewData["Title"] = " تسليم مركبة";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">تخصيص المركبات</h2>
+    <!-- Display TempData message if it exists -->
+    @if (ViewData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @ViewData["ErrorMessage"]
+        </div>
+    }
+
+    <form asp-action="Create" method="post" id="handoverForm">
+        <div class="row">
+            <!-- Employee Number Search Box -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="EmployeeNumber">رقم الموظف</label>
+                    <input type="text" class="form-control" id="EmployeeNumber" placeholder="أدخل رقم الموظف">
+                    <span id="employeeNumberValidation" class="text-danger"></span>
+                </div>
+
+                <div class="mt-3">
+                    <h4>معلومات الموظف</h4>
+                    <div class="card">
+                        <div class="card-body" id="employeeInfo">
+                            <!-- Dynamic employee details will be populated here -->
+                            <p>الاسم: <span id="EmployeeName"></span></p>
+                            <p>المنصب: <span id="JobTitle"></span></p>
+                            <p>القسم: <span id="SectionName"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs to store the employee data -->
+                <input type="hidden" id="EmployeeNameInput" name="EmployeeName">
+                <input type="hidden" id="JobTitleInput" name="EmployeeTitle">
+                <input type="hidden" id="SectionNameInput" name="EmployeeDepartment">
+                <input type="hidden" id="EmployeeCodeInput" name="EmployeeCode"> <!-- Hidden field for EmployeeCode -->
+                <input type="hidden" id="EmployeeIdInput" name="EmployeeId"> <!-- Hidden field for EmployeeCode -->
+            </div>
+
+            <!-- Vehicle Plate Number Search Box -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="VehiclePlateNumber">رقم اللوحة</label>
+                    <input type="text" class="form-control" id="VehiclePlateNumber" placeholder="أدخل رقم اللوحة">
+                    <span id="vehiclePlateNumberValidation" class="text-danger"></span>
+                </div>
+
+                <div class="mt-3">
+                    <h4>معلومات السيارة</h4>
+                    <div class="card">
+                        <div class="card-body" id="vehicleInfo">
+                            <!-- Dynamic vehicle details will be populated here -->
+                            <p>النوع: <span id="VehicleBrand"></span></p>
+                            <p>الموديل: <span id="VehicleModel"></span></p>
+                            <p>اللون: <span id="VehicleColor"></span></p>
+                            <p>رقم الشاصي: <span id="VehicleSerialNumber"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs to store the vehicle data -->
+                <input type="hidden" id="VehicleBrandInput" name="Vehicle.Brand">
+                <input type="hidden" id="VehicleModelInput" name="Vehicle.Model">
+                <input type="hidden" id="VehicleColorInput" name="Vehicle.Color">
+                <input type="hidden" id="VehicleSerialNumberInput" name="Vehicle.SerialNumber">
+                <input type="hidden" id="VehicleIdInput" name="VehicleId"> <!-- Hidden field for VehicleId -->
+                <input type="hidden" id="LicensePlateNumberInput" name="Vehicle.LicensePlateNumber"> <!-- Hidden field for LicensePlateNumber -->
+            </div>
+        </div>
+        <br />
+        <!-- Status, Handover Date, and Notes Fields -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="StatusId">الحالة</label>
+                    <select class="form-control" id="StatusId" name="StatusId">
+                        <option value="">اختر الحالة</option>
+                    </select>
+                    <input type="hidden" id="StatusText" name="StatusText" />
+                    <span id="statusValidation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="HandoverDate" class="control-label">تاريخ الاستلام</label>
+                    <input asp-for="HandoverDate" type="date" class="form-control" id="HandoverDate">
+                    <span id="handoverDateValidation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="ReturnDate" class="control-label">تاريخ التسليم</label>
+                    <input asp-for="ReturnDate" type="date" class="form-control" id="ReturnDate">
+                    <span id="returnDateValidation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="Notes">الملاحظات</label>
+                    <textarea class="form-control" id="Notes" name="Notes" placeholder="أدخل الملاحظات"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="form-group text-center mt-4">
+            <input type="submit" value="حفظ" class="btn btn-primary">
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        function decodeHtml(html) {
+            var txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        var selectedStatus = '@(Model?.StatusText ?? string.Empty)'; // Safe handling of null Model
+        console.log("Selected status: ", selectedStatus); // Debugging
+
+        // Fetch the status values using AJAX
+        $.ajax({
+            url: '/LookupCommon/GetLookupVehicleStatus',
+            type: 'GET',
+            success: function (data) {
+                console.log("Received data:", data); // Debugging
+
+                // Clear and populate the Status dropdown
+                $('#StatusId').empty().append('<option value="">اختر الحالة</option>');
+                $.each(data, function (index, status) {
+                    $('#StatusId').append($('<option>', {
+                        value: status.id,
+                        text: status.status
+                    }));
+                });
+
+                if (selectedStatus) {
+                    $('#StatusId option').filter(function () {
+                        return $(this).text() === selectedStatus;
+                    }).prop('selected', true);
+                }
+            },
+            error: function () {
+                alert('حدث خطأ أثناء جلب الحالات.');
+            }
+        });
+
+        // Handle change event to store the selected StatusText
+        $('#StatusId').on('change', function () {
+            var statusText = $(this).find("option:selected").text();
+            $('#StatusText').val(statusText); // Store the selected status text in a hidden input
+        });
+        $(".close").click(function () {
+            $('#confirmationModal').modal('hide');
+        });
+        // Fetch employee details based on employee number
+        $('#EmployeeNumber').on('blur', function () {
+            var empNumber = $(this).val();
+            if (empNumber) {
+                $.ajax({
+                    url: '@Url.Action("GetEmployeeInfo", "Hr")',
+                    type: 'GET',
+                    data: { empNumber: empNumber },
+                    success: function (data) {
+                        $('#EmployeeName').text(data.employeeName);
+                        $('#JobTitle').text(data.jobTitle);
+                        $('#SectionName').text(data.sectionName);
+                        $('#EmployeeIdInput').val(data.employeeId);
+                        $('#EmployeeNameInput').val(data.employeeName);
+                        $('#JobTitleInput').val(data.jobTitle);
+                        $('#SectionNameInput').val(data.sectionName);
+                        $('#EmployeeCodeInput').val(empNumber);
+                        $('#EmployeeIdInput').val(data.employeeId);
+                        $('#employeeNumberValidation').text('');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 404) {
+                            var errorMessage = xhr.responseJSON.message;
+                            $('#employeeNumberValidation').text(errorMessage);
+                        } else {
+                            $('#employeeNumberValidation').text('حدث خطأ أثناء محاولة جلب معلومات الموظف.');
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#VehiclePlateNumber').on('blur', function () {
+            var plateNumber = $(this).val();
+            if (plateNumber) {
+                $.ajax({
+                    url: '@Url.Action("DetailsByPlate", "Vehicles")',
+                    type: 'GET',
+                    data: { LicensePlateNumber: plateNumber },
+                    success: function (data) {
+                        $('#VehicleBrand').text(data.brand);
+                        $('#VehicleModel').text(data.model);
+                        $('#VehicleColor').text(data.color);
+                        $('#VehicleSerialNumber').text(data.serialNumber);
+                        $('#VehicleBrandInput').val(data.brand);
+                        $('#VehicleModelInput').val(data.model);
+                        $('#VehicleColorInput').val(data.color);
+                        $('#VehicleSerialNumberInput').val(data.serialNumber);
+                        $('#VehicleIdInput').val(data.id);
+                        $('#LicensePlateNumberInput').val(plateNumber);
+                        $('#vehiclePlateNumberValidation').text('');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 404) {
+                            var errorMessage = xhr.responseJSON.message;
+                            $('#vehiclePlateNumberValidation').text(errorMessage);
+                        } else {
+                            $('#vehiclePlateNumberValidation').text('حدث خطأ أثناء محاولة جلب معلومات السيارة.');
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#handoverForm').on('submit', function (e) {
+            e.preventDefault(); // Prevent form submission for now
+            var isValid = true;
+
+            if (!$('#EmployeeIdInput').val()) {
+                isValid = false;
+                $('#employeeNumberValidation').text('يرجى البحث عن رقم الموظف وتحديده.');
+            }
+
+            if (!$('#VehicleIdInput').val()) {
+                isValid = false;
+                $('#vehiclePlateNumberValidation').text('يرجى البحث عن رقم اللوحة وتحديده.');
+            }
+
+
+
+            if (!$('#HandoverDate').val()) {
+                isValid = false;
+                $('#handoverDateValidation').text('يرجى إدخال تاريخ التخصيص.');
+            } else {
+                $('#handoverDateValidation').text('');
+            }
+            if (!$('#ReturnDate').val()) {
+                isValid = false;
+                $('#returnDateValidation').text('يرجى إدخال تاريخ التسليم.');
+            } else {
+                $('#returnDateValidation').text('');
+            }
+
+            if (isValid) {
+                var employeeName = $('#EmployeeName').text();
+                var vehiclePlateNumber = $('#VehiclePlateNumber').val();
+                var confirmationMessage = `هل انت متأكد من تخصيص المركبة رقم ${vehiclePlateNumber} للموظف ${employeeName}؟`;
+                $('#confirmationMessage').text(confirmationMessage);
+                $('#confirmationModal').modal('show'); // Show the modal
+            }
+        });
+
+        // Handle the confirm button click in the modal
+        $('#confirmButton').on('click', function () {
+            $('#handoverForm').off('submit').submit(); // Allow form submission after confirmation
+        });
+    });
+
+</script>
+<style>
+    .card {
+        width: 500px;
+        height: 200px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ddd;
+    }
+
+</style>
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title" id="confirmationModalLabel">تأكيد التخصيص</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- The confirmation message will be dynamically inserted here -->
+                <p id="confirmationMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmButton" class="btn btn-primary">نعم</button>
+                <button type="button" class="btn btn-secondary close" data-dismiss="modal">لا</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@model AGOC.ViewModels.SearchViewModel
+
+<form method="get" asp-action="Search" class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+    <div class="form-row row g-3 align-items-center">
+
+        <!-- Search by Employee Number -->
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="employeeNumber" class="form-label">الرقم الوظيفي</label>
+            <input type="number" class="form-control" id="employeeNumber" name="employeeNumber"
+                   value="@Model.EmployeeNumber" placeholder="ادخل الرقم الوظيفي" />
+        </div>
+
+        <!-- Search by Violation Date -->
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="violationDate" class="form-label">تاريخ المخالفة</label>
+            <input type="date" class="form-control" id="violationDate" name="violationDate"
+                   value="@Model.ViolationDate?.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <!-- IsPaid Lookup Dropdown -->
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="isPaid" class="form-label">تم الدفع</label>
+            @Html.DropDownList("isPaid", new SelectList(new List<SelectListItem>
+            {
+            new SelectListItem { Text = "الكل", Value = "" },
+            new SelectListItem { Text = "نعم", Value = "1", Selected = (Model.IsPaid == 1) },
+            new SelectListItem { Text = "لا", Value = "0", Selected = (Model.IsPaid == 0) }
+            }, "Value", "Text"), new { @class = "form-select", id = "isPaid" })
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-lg-2 col-md-6 col-sm-12 d-grid">
+            <label class="form-label d-none d-md-block">&nbsp;</label>
+            <button type="submit" class="btn btn-primary">بحث</button>
+        </div>
+
+    </div>
+</form>

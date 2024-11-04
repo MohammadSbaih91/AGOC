@@ -1,0 +1,214 @@
+﻿@model AGOC.ViewModels.VehicleCategoryLookupIndexViewModel
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">أنواع الفئات</h2>
+
+    <!-- Button to open the modal for adding a new category -->
+    <div class="text-right mb-3">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCategoryModal">
+            إضافة فئة جديدة
+        </button>
+    </div>
+
+    <!-- Table to display vehicle categories -->
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark text-center">
+            <tr>
+                <th>#</th>
+                <th>نوع المركبة</th>
+                <th>موديل المركبة</th>
+                <th>فئة المركبة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            @foreach (var category in Model.PaginatedCategories.Items)
+            {
+                <tr>
+                    <td>@category.Id</td>
+                    <td>@category.VehiclesLookupDetail?.VehiclesLookupMain?.Description</td>
+                    <td>@category.VehiclesLookupDetail?.Description</td>
+                    <td>@category.Description</td>
+                    <td>
+                        <a href="@Url.Action("Edit", new { id = category.Id })" class="btn btn-warning btn-sm">تعديل</a>
+
+                        <!-- Delete Button with Confirmation Modal -->
+                        <button type="button" class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteConfirmationModal" data-id="@category.Id">حذف</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination Partial -->
+    @await Html.PartialAsync("~/Views/Shared/PartialView/_Pagination.cshtml", Model.PaginatedCategories)
+</div>
+
+<!-- Create Modal for Vehicle Category -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1" role="dialog" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title" id="createCategoryModalLabel">إضافة فئة جديدة</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Create Form -->
+                <form asp-action="Create" method="post" id="categoryForm">
+                    <!-- Dropdown for Car Brand -->
+                    <div class="form-group">
+                        <label asp-for="BrandId" class="control-label">نوع السيارة</label>
+                        <select asp-for="BrandId" class="form-control" id="Brand">
+                            <option value="">اختر نوع السيارة</option>
+                        </select>
+                        <span asp-validation-for="BrandId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Dropdown for Car Model -->
+                    <div class="form-group">
+                        <label asp-for="CreateCategoryModel.VehiclesLookupDetailId" class="control-label">اختر موديل المركبة</label>
+                        <select asp-for="CreateCategoryModel.VehiclesLookupDetailId" class="form-control" id="Model">
+                            <option value="">اختر الموديل</option>
+                        </select>
+                        <span asp-validation-for="CreateCategoryModel.VehiclesLookupDetailId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Category Name Input -->
+                    <div class="form-group">
+                        <label asp-for="CreateCategoryModel.Description" class="control-label">فئة المركبة</label>
+                        <input asp-for="CreateCategoryModel.Description" class="form-control" placeholder="أدخل فئة المركبة" required />
+                        <span asp-validation-for="CreateCategoryModel.Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group text-center mt-4">
+                        <input type="submit" value="حفظ" class="btn btn-primary btn-block" />
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">تأكيد الحذف</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                هل انت متأكد من الحذف؟
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDeleteButton">نعم</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">لا</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            var deleteVehicleId;
+
+            // Handle click on delete button to open modal
+            $('.delete-button').click(function () {
+                deleteVehicleId = $(this).data('id'); // Store the ID of the item to be deleted
+                $('#deleteConfirmationModal').modal('show'); // Show the confirmation modal
+            });
+
+            // Handle click on close button to hide modal
+            $(".close").click(function () {
+                $('#deleteConfirmationModal').modal('hide'); // Hide the modal on close
+            });
+
+            // Handle click on confirm delete button
+            $('#confirmDeleteButton').click(function () {
+                $.ajax({
+                    url: '/VehicleCategoryLookup/Delete/' + deleteVehicleId, // Endpoint to handle deletion
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // CSRF token
+                    },
+                    success: function (response) {
+                        // Ensure the response is JSON and check if the deletion was successful
+                        if (response.success) {
+                            location.reload(); // Refresh page after successful deletion
+                        } else {
+                            alert(response.errorMessage || 'حدث خطأ أثناء محاولة حذف الفئة.'); // Show error message if deletion failed
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('حدث خطأ أثناء محاولة حذف الفئة.'); // Show error message on failure
+                        $('#deleteConfirmationModal').modal('hide'); // Hide the modal after error
+                    }
+                });
+            });
+
+            $(document).ready(function () {
+                // Load the car brands when the modal is shown
+                $('#createCategoryModal').on('shown.bs.modal', function () {
+                    // Check if the Brand dropdown is empty to prevent multiple loads
+                    if ($('#Brand').children('option').length <= 1) {
+                        $.ajax({
+                            url: '/LookupCommon/GetVehiclesLookupMain',
+                            type: 'GET',
+                            success: function (data) {
+                                // Populate the Brand dropdown
+                                $.each(data, function (index, brand) {
+                                    $('#Brand').append($('<option>', {
+                                        value: brand.id,
+                                        text: brand.description
+                                    }));
+                                });
+                            },
+                            error: function () {
+                                alert('حدث خطأ أثناء جلب أنواع السيارات.');
+                            }
+                        });
+                    }
+                });
+
+                // Handle the change event for the Brand dropdown
+                $('#Brand').on('change', function () {
+                    var brandId = $(this).val();
+                    if (brandId) {
+                        // Fetch models based on selected brand
+                        $.ajax({
+                            url: '/LookupCommon/GetVehiclesLookupDetailsByLookMainId',
+                            type: 'GET',
+                            data: { id: brandId },
+                            success: function (data) {
+                                // Clear the Model dropdown
+                                $('#Model').empty().append('<option value="">اختر الموديل</option>');
+
+                                // Populate the Model dropdown
+                                $.each(data, function (index, model) {
+                                    $('#Model').append($('<option>', {
+                                        value: model.id,
+                                        text: model.description
+                                    }));
+                                });
+                            },
+                            error: function () {
+                                alert('حدث خطأ أثناء جلب الموديلات.');
+                            }
+                        });
+                    } else {
+                        // Clear the Model dropdown if no brand is selected
+                        $('#Model').empty().append('<option value="">اختر الموديل</option>');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

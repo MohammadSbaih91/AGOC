@@ -1,0 +1,121 @@
+﻿@model dynamic
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        @if (Model.PageNumber > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="@ViewData["PaginationAction"]"
+                   asp-route-pageNumber="@(Model.PageNumber - 1)"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-searchText="@ViewData["SearchText"]"
+                   asp-route-employeeNumber="@ViewData["EmployeeNumber"]"
+                   asp-route-violationDate="@ViewData["ViolationDate"]"
+                   asp-route-isPaid="@ViewData["IsPaid"]">السابق</a>
+            </li>
+        }
+
+        @* Show first few pages *@
+        @for (int i = 1; i <= Math.Min(3, Model.TotalPages); i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" asp-action="@ViewData["PaginationAction"]"
+                   asp-route-pageNumber="@i"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-searchText="@ViewData["SearchText"]"
+                   asp-route-employeeNumber="@ViewData["EmployeeNumber"]"
+                   asp-route-violationDate="@ViewData["ViolationDate"]"
+                   asp-route-isPaid="@ViewData["IsPaid"]">@i</a>
+            </li>
+        }
+
+        @* Show dots if we skipped pages *@
+        @if (Model.PageNumber > 4)
+        {
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+        }
+
+        @* Show current page and its neighbors *@
+        @for (int i = Math.Max(4, Model.PageNumber - 1); i <= Math.Min(Model.TotalPages - 1, Model.PageNumber + 1); i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" asp-action="@ViewData["PaginationAction"]"
+                   asp-route-pageNumber="@i"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-searchText="@ViewData["SearchText"]"
+                   asp-route-employeeNumber="@ViewData["EmployeeNumber"]"
+                   asp-route-violationDate="@ViewData["ViolationDate"]"
+                   asp-route-isPaid="@ViewData["IsPaid"]">@i</a>
+            </li>
+        }
+
+        @* Show dots if we're skipping to the last pages *@
+        @if (Model.PageNumber < Model.TotalPages - 2)
+        {
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+        }
+
+        @* Show last page *@
+        @if (Model.TotalPages > 3)
+        {
+            <li class="page-item @(Model.TotalPages == Model.PageNumber ? "active" : "")">
+                <a class="page-link" asp-action="@ViewData["PaginationAction"]"
+                   asp-route-pageNumber="@Model.TotalPages"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-searchText="@ViewData["SearchText"]"
+                   asp-route-employeeNumber="@ViewData["EmployeeNumber"]"
+                   asp-route-violationDate="@ViewData["ViolationDate"]"
+                   asp-route-isPaid="@ViewData["IsPaid"]">@Model.TotalPages</a>
+            </li>
+        }
+
+        @if (Model.PageNumber < Model.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="@ViewData["PaginationAction"]"
+                   asp-route-pageNumber="@(Model.PageNumber + 1)"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-searchText="@ViewData["SearchText"]"
+                   asp-route-employeeNumber="@ViewData["EmployeeNumber"]"
+                   asp-route-violationDate="@ViewData["ViolationDate"]"
+                   asp-route-isPaid="@ViewData["IsPaid"]">التالي</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+<style>
+    .pagination .page-item .page-link {
+        color: #8a1538; /* Text color */
+        background-color: #ffffff; /* Background color */
+        border-color: #8a1538; /* Border color */
+    }
+
+    .pagination .page-item.active .page-link {
+        color: #ffffff;
+        background-color: #8a1538;
+        border-color: #8a1538;
+    }
+
+    .pagination .page-item .page-link:hover {
+        color: #ffffff;
+        background-color: #8a1538;
+        border-color: #8a1538;
+    }
+
+    .pagination .page-item .page-link:focus {
+        color: #ffffff;
+        background-color: #8a1538;
+        border-color: #8a1538;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #8a1538;
+        background-color: #ffffff;
+        border-color: #8a1538;
+    }
+</style>
