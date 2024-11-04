@@ -24,32 +24,41 @@ namespace AGOC.Domain.Managers
         }
 
         // Send an SMS message and log it
-        public async Task<OperationResult> SendMessageAsync(MessageViewModel messageViewModel)
+        public async Task<OperationResult> SendMessageAsync(Message message, bool? MobileServiceEnable)
         {
             var result = new OperationResult();
 
             try
             {
-                // Map ViewModel to Message model
-                var message = _mapper.Map<Message>(messageViewModel);
                 message.CreatedOn = DateTime.Now;
 
                 // Add the message to the database
                 await _unitOfWork.MessageRepository.AddAsync(message);
                 await _unitOfWork.Save();
 
-                // Send the SMS message and log it
-                foreach (var recipient in messageViewModel.Recipients)
+                // Send SMS message using the Employee's Mobile number
+                foreach (var recipient in message.Recipients)
                 {
                     try
                     {
-                        await _smslogManager.SendSmsAndLogAsync("System", "api_key", recipient.PhoneNumber, message.MessageContent, true, message.MessageID, recipient.EmployeeId);
+                        // Retrieve the mobile number from Employee
+                        var mobile = recipient.Employee?.Mobile;
+                        if (!string.IsNullOrEmpty(mobile) && MobileServiceEnable.HasValue && MobileServiceEnable.Value)
+                        {
+                            await _smslogManager.SendSmsAndLogAsync("System", "api_key", mobile, message.MessageContent, true, message.MessageID, recipient.EmployeeID);
+                        }
+                        else
+                        {
+                            Log.Warning("No mobile number found for EmployeeID {EmployeeID}", recipient.EmployeeID);
+                            result.Success = false;
+                            result.ErrorMessage = $"No mobile number for Employee {recipient.EmployeeID}.";
+                        }
                     }
                     catch (Exception smsEx)
                     {
-                        Log.Error(smsEx, "Failed to send SMS to {PhoneNumber}", recipient.PhoneNumber);
+                        Log.Error(smsEx, "Failed to send SMS to EmployeeID {EmployeeID}", recipient.EmployeeID);
                         result.Success = false;
-                        result.ErrorMessage = $"Failed to send SMS to {recipient.PhoneNumber}.";
+                        result.ErrorMessage = $"Failed to send SMS to Employee {recipient.EmployeeID}.";
                     }
                 }
 
@@ -64,6 +73,8 @@ namespace AGOC.Domain.Managers
 
             return result;
         }
+
+
 
         // Get all messages
         public async Task<IEnumerable<MessageViewModel>> GetAllMessagesAsync()

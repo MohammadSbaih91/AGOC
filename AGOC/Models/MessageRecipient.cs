@@ -4,12 +4,11 @@ namespace AGOC.Models
 {
     public class MessageRecipient
     {
-        [Key]  // Explicitly marking RecipientID as the primary key
+        [Key]
         public int RecipientID { get; set; }
-
         public int MessageID { get; set; }
         public int EmployeeID { get; set; }
-        public int SendStatusID { get; set; }
+        public int StatusID { get; set; } // Consolidated status column
         public DateTime? SentOn { get; set; }
         public string? ErrorMessage { get; set; }
 

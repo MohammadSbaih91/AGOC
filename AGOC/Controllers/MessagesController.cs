@@ -16,12 +16,18 @@ namespace AGOC.Controllers
         private readonly IMessagesManager _messagesManager;
         private readonly IMapper _mapper;
         private readonly ILogger<MessagesController> _logger;
+        private readonly IEmployeeManager _employeeService;
 
-        public MessagesController(IMessagesManager messagesManager, IMapper mapper, ILogger<MessagesController> logger)
+        public MessagesController(
+       IMessagesManager messagesManager,
+       IMapper mapper,
+       ILogger<MessagesController> logger,
+       IEmployeeManager employeeService)
         {
             _messagesManager = messagesManager;
             _mapper = mapper;
             _logger = logger;
+            _employeeService = employeeService;
         }
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
@@ -61,10 +67,31 @@ namespace AGOC.Controllers
             return View(mappedMessage);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             _logger.LogInformation("Navigated to Create Message view.");
-            return View(new MessageViewModel());
+
+            // Fetch all employees or filter as needed
+            var employees = await _employeeService.GetAllEmployeesAsync();
+
+            // Map employees to MessageRecipientViewModel
+            var recipients = employees.Select(emp => new MessageRecipientViewModel
+            {
+                EmployeeID = emp.EmployeeID,
+                EmployeeName = emp.EmployeeName,
+                Mobile = emp.Mobile,
+                DepartmentName = emp.DepartmentName,
+                JobTitle = emp.JobTitle,
+                StatusID = 2
+            }).ToList();
+
+            // Create the MessageViewModel with preloaded recipients
+            var messageViewModel = new MessageViewModel
+            {
+                Recipients = recipients
+            };
+
+            return View(messageViewModel);
         }
 
         [HttpPost]
@@ -76,8 +103,35 @@ namespace AGOC.Controllers
                 try
                 {
                     _logger.LogInformation("Attempting to create a new message.");
+
+                    // Fetch all employees and ensure each recipient has a StatusID
+                    var employees = await _employeeService.GetAllEmployeesAsync();
+                    var recipients = employees.Select(emp => new MessageRecipientViewModel
+                    {
+                        EmployeeID = emp.EmployeeID,
+                        EmployeeName = emp.EmployeeName,
+                        Mobile = emp.Mobile,
+                        DepartmentName = emp.DepartmentName,
+                        JobTitle = emp.JobTitle,
+                        StatusID = 1 // Set a default StatusID (e.g., Pending)
+                    }).ToList();
+
+                    // Add recipients to the messageViewModel
+                    messageViewModel.Recipients = recipients;
+
+                    // Map MessageViewModel to Message
                     var message = _mapper.Map<Message>(messageViewModel);
-                    var result = await _messagesManager.SendMessageAsync(messageViewModel);
+
+                    // Validate that each recipient has a valid SendStatusID
+                    foreach (var recipient in message.Recipients)
+                    {
+                        if (recipient.StatusID == 0) // Assuming 0 is an invalid StatusID
+                        {
+                            recipient.StatusID = 1; // Default to a valid StatusID (e.g., Pending)
+                        }
+                    }
+
+                    var result = await _messagesManager.SendMessageAsync(message, false);
 
                     if (result.Success)
                     {
@@ -103,6 +157,9 @@ namespace AGOC.Controllers
 
             return View(messageViewModel);
         }
+
+
+
 
         public async Task<IActionResult> Edit(int id)
         {

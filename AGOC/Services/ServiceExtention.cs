@@ -91,6 +91,7 @@ namespace AGOC.Services
             services.AddHttpClient();
             services.AddMemoryCache();
             services.AddScoped<IMessagesManager, MessagesManager>();
+            services.AddScoped<IEmployeeManager, EmployeeManager>();
 
 
         }

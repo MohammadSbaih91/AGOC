@@ -14,6 +14,7 @@ public partial class VehicleMsContext : DbContext
     }
 
     public virtual DbSet<LookupDepartment> LookupDepartments { get; set; }
+    public virtual DbSet<EmployeeInfo> EmployeeInfo { get; set; }
 
     public virtual DbSet<LookupVehicleStatus> LookupVehicleStatuses { get; set; }
 
@@ -58,6 +59,42 @@ public partial class VehicleMsContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<EmployeeInfo>(entity =>
+        {
+            entity.HasKey(e => e.EmployeeID); // Set primary key
+            entity.Property(e => e.EmployeeCode).HasMaxLength(50);
+            entity.Property(e => e.EmployeeName).HasMaxLength(100);
+            entity.Property(e => e.Mobile).HasMaxLength(20);
+            entity.Property(e => e.EmployeeNameEng).HasMaxLength(100);
+            entity.Property(e => e.DepartmentName).HasMaxLength(100);
+            entity.Property(e => e.DepartmentNameEn).HasMaxLength(100);
+            entity.Property(e => e.SectionName).HasMaxLength(100);
+            entity.Property(e => e.SectionNameEn).HasMaxLength(100);
+            entity.Property(e => e.JobTitle).HasMaxLength(100);
+            entity.Property(e => e.JobTitleEn).HasMaxLength(100);
+            entity.Property(e => e.PhoneExtension).HasMaxLength(10);
+            entity.Property(e => e.Account).HasMaxLength(50);
+            entity.Property(e => e.EmploymentStatusID).IsRequired();
+            // Configure other properties as needed
+        });
+        modelBuilder.Entity<MessageRecipient>(entity =>
+        {
+            entity.HasKey(e => e.RecipientID);
+
+            entity.HasOne(e => e.Status)
+                  .WithMany()
+                  .HasForeignKey(e => e.StatusID)
+                  .OnDelete(DeleteBehavior.Restrict)
+                  .HasConstraintName("FK_MessageRecipients_MessageStatuses_StatusID");
+
+            entity.HasOne(e => e.Message)
+                  .WithMany(m => m.Recipients)
+                  .HasForeignKey(e => e.MessageID);
+        });
+
+
+
         modelBuilder.Entity<LookupDepartment>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__LookupDe__3214EC07A608C4E9");

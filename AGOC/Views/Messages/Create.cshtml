@@ -47,17 +47,30 @@
         <span asp-validation-for="CreatedBy" class="text-danger"></span>
     </div>
 
-    <h4 class="mt-4">إضافة مستلمين</h4>
+    <h4 class="mt-4">اختيار المستلمين</h4>
     <div id="recipients-list">
-        <div class="form-group">
-            <label>رقم هاتف المستلم</label>
-            <input name="Recipients[0].PhoneNumber" class="form-control" />
-            <label>رقم تعريف الموظف</label>
-            <input name="Recipients[0].EmployeeId" class="form-control" />
-        </div>
-    </div>
+        @{
+            var recipientsList = Model.Recipients.ToList();
+        }
 
-    <button type="button" class="btn btn-secondary" onclick="addRecipient()">إضافة مستلم آخر</button>
+        @foreach (var recipient in recipientsList)
+        {
+            var index = recipientsList.IndexOf(recipient);
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="Recipients[@index].IsSelected" value="true" />
+                <label class="form-check-label">
+                    @recipient.EmployeeName - @recipient.Mobile - @recipient.DepartmentName
+                </label>
+                <input type="hidden" name="Recipients[@index].EmployeeID" value="@recipient.EmployeeID" />
+                <input type="hidden" name="Recipients[@index].EmployeeName" value="@recipient.EmployeeName" />
+                <input type="hidden" name="Recipients[@index].Mobile" value="@recipient.Mobile" />
+                <input type="hidden" name="Recipients[@index].DepartmentName" value="@recipient.DepartmentName" />
+                <input type="hidden" name="Recipients[@index].JobTitle" value="@recipient.JobTitle" />
+                <input type="hidden" name="Recipients[@index].Status" value="@recipient.StatusID" />
+            </div>
+        }
+
+    </div>
 
     <div class="form-group mt-4">
         <button type="submit" class="btn btn-primary">إنشاء الرسالة</button>
@@ -66,22 +79,7 @@
 </form>
 
 @section Scripts {
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
     <script>
-        let recipientIndex = 1;
-
-        function addRecipient() {
-            const recipientTemplate = `
-                        <div class="form-group mt-3">
-                            <label>رقم هاتف المستلم</label>
-                            <input name="Recipients[${recipientIndex}].PhoneNumber" class="form-control" />
-                            <label>رقم تعريف الموظف</label>
-                            <input name="Recipients[${recipientIndex}].EmployeeId" class="form-control" />
-                        </div>`;
-            document.getElementById("recipients-list").insertAdjacentHTML("beforeend", recipientTemplate);
-            recipientIndex++;
-        }
-
         $(document).ready(function () {
             if ('@ViewData["ErrorMessage"]' !== '') {
                 $('#error-message').removeAttr('hidden');

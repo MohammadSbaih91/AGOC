@@ -51,9 +51,9 @@
             @foreach (var recipient in Model.Recipients)
             {
                 <tr>
-                    <td>@recipient.EmployeeId</td>
-                    <td>@recipient.PhoneNumber</td>
-                    <td>@recipient.Status</td>
+                    <td>@recipient.EmployeeID</td>
+                    <td>@recipient.Mobile</td>
+                    <td>@recipient.StatusID</td>
                     @*  <td>@recipient.SentOn?.ToString("g") ?? "غير متاح"</td>
             <td>@recipient.ErrorMessage ?? "غير متاح"</td> *@
                 </tr>

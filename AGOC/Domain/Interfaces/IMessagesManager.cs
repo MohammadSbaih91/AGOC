@@ -1,4 +1,5 @@
-﻿using AGOC.Services;
+﻿using AGOC.Models;
+using AGOC.Services;
 using AGOC.ViewModels;
 
 namespace AGOC.Domain.Interfaces
@@ -6,7 +7,7 @@ namespace AGOC.Domain.Interfaces
     public interface IMessagesManager
     {
         // Sends a message and logs it in the system
-        Task<OperationResult> SendMessageAsync(MessageViewModel messageViewModel);
+        Task<OperationResult> SendMessageAsync(Message message, bool? MobileServiceEnable);
 
         // Retrieves all non-deleted messages
         Task<IEnumerable<MessageViewModel>> GetAllMessagesAsync();

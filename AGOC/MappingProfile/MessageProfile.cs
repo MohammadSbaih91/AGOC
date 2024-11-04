@@ -3,13 +3,16 @@ using AGOC.ViewModels;
 
 using AutoMapper;
 
-namespace AGOC.MappingProfile
+public class MappingProfile : Profile
 {
-    public class MessageProfile : Profile
+    public MappingProfile()
     {
-        public MessageProfile()
-        {
-            CreateMap<Message, MessageViewModel>().ReverseMap();
-        }
+        CreateMap<MessageViewModel, Message>()
+            .ForMember(dest => dest.Recipients, opt => opt.MapFrom(src => src.Recipients))
+            .ReverseMap();
+
+        CreateMap<MessageRecipientViewModel, MessageRecipient>()
+            .ForMember(dest => dest.StatusID, opt => opt.MapFrom(src => src.StatusID)) // Directly map to StatusID
+            .ReverseMap();
     }
 }
