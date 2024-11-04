@@ -1,0 +1,71 @@
+﻿@model AGOC.ViewModels.MessageViewModel
+
+@{
+    ViewData["Title"] = "تفاصيل الرسالة";
+}
+
+<h2>تفاصيل الرسالة</h2>
+
+<div class="card">
+    <div class="card-header">
+        <h4>معلومات الرسالة</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">محتوى الرسالة</dt>
+            <dd class="col-sm-9">@Model.MessageContent</dd>
+
+            <dt class="col-sm-3">نوع الإرسال</dt>
+            <dd class="col-sm-9">@Model.SendType</dd>
+
+            <dt class="col-sm-3">القناة</dt>
+            <dd class="col-sm-9">@Model.Channel</dd>
+
+            <dt class="col-sm-3">وقت الإرسال المجدول</dt>
+            <dd class="col-sm-9">@Model.ScheduledSendTime?.ToString("g") ?? "غير متاح"</dd>
+
+            <dt class="col-sm-3">تاريخ الإنشاء</dt>
+            <dd class="col-sm-9">@Model.CreatedOn.ToString("g")</dd>
+
+            <dt class="col-sm-3">تم الإنشاء بواسطة</dt>
+            <dd class="col-sm-9">@Model.CreatedBy</dd>
+        </dl>
+    </div>
+</div>
+
+<!-- Recipients List -->
+<h4 class="mt-4">المستلمون</h4>
+@if (Model.Recipients.Any())
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>رقم تعريف الموظف</th>
+                <th>رقم الهاتف</th>
+                <th>حالة الإرسال</th>
+                @*  <th>تاريخ الإرسال</th>
+            <th>رسالة الخطأ</th> *@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var recipient in Model.Recipients)
+            {
+                <tr>
+                    <td>@recipient.EmployeeId</td>
+                    <td>@recipient.PhoneNumber</td>
+                    <td>@recipient.Status</td>
+                    @*  <td>@recipient.SentOn?.ToString("g") ?? "غير متاح"</td>
+            <td>@recipient.ErrorMessage ?? "غير متاح"</td> *@
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>لا يوجد مستلمون مرتبطون بهذه الرسالة.</p>
+}
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">العودة إلى الرسائل</a>
+</div>

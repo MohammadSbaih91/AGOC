@@ -1,0 +1,91 @@
+﻿@model AGOC.ViewModels.MessageViewModel
+
+@{
+    ViewData["Title"] = "إنشاء رسالة";
+}
+
+<h2>إنشاء رسالة جديدة</h2>
+
+<div class="alert alert-danger" role="alert" hidden id="error-message">
+    @ViewData["ErrorMessage"]
+</div>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="MessageContent" class="control-label">محتوى الرسالة</label>
+        <textarea asp-for="MessageContent" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="MessageContent" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SendType" class="control-label">نوع الإرسال</label>
+        <select asp-for="SendType" class="form-control">
+            <option value="Manual">يدوي</option>
+            <option value="Template-based">استنادًا إلى قالب</option>
+        </select>
+        <span asp-validation-for="SendType" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Channel" class="control-label">القناة</label>
+        <select asp-for="Channel" class="form-control">
+            <option value="SMS">رسالة قصيرة</option>
+            <option value="Email">بريد إلكتروني</option>
+        </select>
+        <span asp-validation-for="Channel" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ScheduledSendTime" class="control-label">وقت الإرسال المجدول</label>
+        <input asp-for="ScheduledSendTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="ScheduledSendTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CreatedBy" class="control-label">تم الإنشاء بواسطة</label>
+        <input asp-for="CreatedBy" class="form-control" />
+        <span asp-validation-for="CreatedBy" class="text-danger"></span>
+    </div>
+
+    <h4 class="mt-4">إضافة مستلمين</h4>
+    <div id="recipients-list">
+        <div class="form-group">
+            <label>رقم هاتف المستلم</label>
+            <input name="Recipients[0].PhoneNumber" class="form-control" />
+            <label>رقم تعريف الموظف</label>
+            <input name="Recipients[0].EmployeeId" class="form-control" />
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-secondary" onclick="addRecipient()">إضافة مستلم آخر</button>
+
+    <div class="form-group mt-4">
+        <button type="submit" class="btn btn-primary">إنشاء الرسالة</button>
+        <a asp-action="Index" class="btn btn-secondary">إلغاء</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+    <script>
+        let recipientIndex = 1;
+
+        function addRecipient() {
+            const recipientTemplate = `
+                        <div class="form-group mt-3">
+                            <label>رقم هاتف المستلم</label>
+                            <input name="Recipients[${recipientIndex}].PhoneNumber" class="form-control" />
+                            <label>رقم تعريف الموظف</label>
+                            <input name="Recipients[${recipientIndex}].EmployeeId" class="form-control" />
+                        </div>`;
+            document.getElementById("recipients-list").insertAdjacentHTML("beforeend", recipientTemplate);
+            recipientIndex++;
+        }
+
+        $(document).ready(function () {
+            if ('@ViewData["ErrorMessage"]' !== '') {
+                $('#error-message').removeAttr('hidden');
+            }
+        });
+    </script>
+}

@@ -85,10 +85,14 @@ namespace AGOC.Services
             services.AddTransient<LdapAuthenticationService>();
             services.AddTransient<HrService>();
             services.AddScoped<ISmslogManager, SmslogManager>();
+            services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
             services.AddTransient<HelpersClass>();
             services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddMemoryCache();
+            services.AddScoped<IMessagesManager, MessagesManager>();
+
+
         }
     }
 }

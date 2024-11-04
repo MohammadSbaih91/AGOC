@@ -4,70 +4,47 @@
     ViewData["Title"] = "Login";
 }
 
-
 <title>@ViewData["Title"]</title>
 <style>
-    .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 75vh;
+    .login-container { display: flex; justify-content: center; align-items: center; height: 75vh; }
 
-    }
+    .login-box { width: 100%; max-width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: right; background-color: white; }
 
-    .login-box {
-        width: 100%;
-        max-width: 400px;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        text-align: right;
-        background-color: white;
-        
+    .login-image { max-width: 100%; height: auto; margin-bottom: 20px; background-image: url('/images/image.png'); }
 
-    }
-
-    .login-image {       
-        max-width: 100%;
-        height: auto;  
-        margin-bottom: 20px;  
-        background-image: url('/images/image.png');  
-
-    }
-
-
-    body {
-        background-image: url('imges/image.png');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-
-
-    }
-
+    body { background-image: url('/images/image.png'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed; }
 </style>
-<div  class="container login-container ">
-        <div class="login-box">
-            <img src="~/imges/icon2.png" alt="Login Image" class="login-image">
-        <h3 style=" font-family: DroidSansArabic, sans-serif; 
-                          color: #8a1538;">تسجيل الدخول </h3>&nbsp;
 
-            <form method="post" asp-controller="Account" asp-action="Login">
-                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-                <div class="form-group">
-                <label asp-for="Username" style=" font-family: DroidSansArabic, sans-serif;
-                          color: #8a1538; font-weight:bold">اسم المستخدم</label>
-                    <input asp-for="Username" class="form-control" />       
-                </div>
-                <br />
-                <div class="form-group">
-                <label asp-for="Password" style=" font-family: DroidSansArabic, sans-serif;
-                          color: #8a1538; font-weight:bold">كلمة السر</label>
-                    <input asp-for="Password" type="password" class="form-control" />
-                </div>
-                <br />
-            <button type="submit" class="btn btn-primary btn-block" style=" font-family: DroidSansArabic, sans-serif ; font-weight:bold ">تسجيل دخول</button>
-            </form>
+<div class="container login-container">
+    <div class="login-box">
+        <img src="~/images/icon2.png" alt="Login Image" class="login-image">
+        <h3 style="font-family: DroidSansArabic, sans-serif; color: #8a1538;">تسجيل الدخول</h3>&nbsp;
+
+        <form method="post" asp-controller="Account" asp-action="Login">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+            <div class="form-group">
+                <label asp-for="Username" style="font-family: DroidSansArabic, sans-serif; color: #8a1538; font-weight:bold">اسم المستخدم</label>
+                <input asp-for="Username" class="form-control" />
+            </div>
+            <br />
+
+            <div class="form-group">
+                <label asp-for="Password" style="font-family: DroidSansArabic, sans-serif; color: #8a1538; font-weight:bold">كلمة السر</label>
+                <input asp-for="Password" type="password" class="form-control" />
+            </div>
+            <br />
+
+            <div>
+                <label>Login Type:</label>
+                <select name="loginType" class="form-control">
+                    <option value="ldap">LDAP</option>
+                    <option value="web">Web</option>
+                </select>
+            </div>
+            <br />
+
+            <button type="submit" class="btn btn-primary btn-block" style="font-family: DroidSansArabic, sans-serif; font-weight:bold;">تسجيل دخول</button>
+        </form>
     </div>
 </div>

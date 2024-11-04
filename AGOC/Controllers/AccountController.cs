@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using AGOC.Services.Interface;
+using AGOC.ViewModels;
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,14 +13,21 @@ namespace AGOC.Controllers
     {
         private readonly LdapAuthenticationService _ldapService;
         private readonly ILogger<AccountController> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly IUserAuthenticationService _userAuthService; // For non-LDAP authentication
         private readonly string? _userId;
         private readonly string? _username;
-        private readonly IConfiguration _configuration;
 
-        public AccountController(IConfiguration configuration, LdapAuthenticationService ldapAuthenticationService, IHttpContextAccessor httpContextAccessor, ILogger<AccountController> logger)
+        public AccountController(
+            IConfiguration configuration,
+            LdapAuthenticationService ldapAuthenticationService,
+            IUserAuthenticationService userAuthService, // Inject user auth service
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<AccountController> logger)
         {
             _configuration = configuration;
             _ldapService = ldapAuthenticationService;
+            _userAuthService = userAuthService; // Assign to private field
             _logger = logger;
             _userId = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             _username = httpContextAccessor.HttpContext?.User.Identity?.Name;
@@ -29,7 +39,7 @@ namespace AGOC.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 _logger.LogInformation("User {Username} is already authenticated. Redirecting to Vehicles Index.", _username);
-                return RedirectToAction("Index", "Vehicles");
+                return RedirectToAction("Index", "Messages");
             }
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -38,7 +48,7 @@ namespace AGOC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password, string returnUrl = null)
+        public async Task<IActionResult> Login(string username, string password, string loginType = "ldap", string returnUrl = null)
         {
             try
             {
@@ -46,15 +56,31 @@ namespace AGOC.Controllers
                 {
                     return Redirect(returnUrl);
                 }
-                //else
-                //{
-                //    return RedirectToAction("Index", "Test");
-                //}
-                var validationResult = await _ldapService.ValidateUserAsync(username, password);
+
+                AuthValidationResult validationResult;
+
+                if (loginType.ToLower() == "ldap")
+                {
+                    var ldapResult = await _ldapService.ValidateUserAsync(username, password);
+                    validationResult = new AuthValidationResult
+                    {
+                        IsValid = ldapResult.IsValid,
+                        Roles = ldapResult.Roles,
+                        ErrorMessage = ldapResult.ErrorMessage
+                    };
+                }
+                else if (loginType.ToLower() == "web")
+                {
+                    validationResult = await _userAuthService.ValidateUserAsync(username, password);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Invalid login type specified.");
+                }
 
                 if (validationResult.IsValid)
                 {
-                    _logger.LogInformation("User {Username} successfully authenticated.", username);
+                    _logger.LogInformation("User {Username} successfully authenticated via {LoginType}.", username, loginType);
 
                     var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
 
@@ -64,7 +90,6 @@ namespace AGOC.Controllers
                     }
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
                     var authProperties = new AuthenticationProperties
                     {
                         IsPersistent = true,
@@ -72,28 +97,22 @@ namespace AGOC.Controllers
                     };
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                    _logger.LogInformation("User {Username} signed in successfully via {LoginType}.", username, loginType);
 
-                    _logger.LogInformation("User {Username} signed in successfully.", username);
-
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Vehicles");
-                    }
+                    return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                        ? Redirect(returnUrl)
+                        : RedirectToAction("Index", "Messages");
                 }
                 else
                 {
-                    _logger.LogWarning("Failed login attempt for user {Username}. Error: {ErrorMessage}", username, validationResult.ErrorMessage);
+                    _logger.LogWarning("Failed login attempt for user {Username} via {LoginType}. Error: {ErrorMessage}", username, loginType, validationResult.ErrorMessage);
                     ViewData["Message"] = validationResult.ErrorMessage;
                     return View();
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while attempting to log in user {Username}.", username);
+                _logger.LogError(ex, "An error occurred while attempting to log in user {Username} via {LoginType}.", username, loginType);
                 return View();
             }
         }
