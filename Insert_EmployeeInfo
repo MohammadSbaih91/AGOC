@@ -1,0 +1,42 @@
+USE [AGOC]
+GO
+
+INSERT INTO [dbo].[EmployeeInfo] (
+    [EmployeeCode], [EmployeeName], [Mobile], [EmployeeNameEng], 
+    [DepartmentName], [DepartmentNameEn], [SectionName], [SectionNameEn], 
+    [JobTitle], [JobTitleEn], [PhoneExtension], [Account], 
+    [ExcludeInPayroll], [EmploymentStatusID]
+)
+VALUES
+    ('EMP001', N'عيسى بن سعد النعيمي', '0501234567', 'Essa Bin Saad Al-Naemi', 
+     N'الإدارة العامة', 'General Administration', N'الشؤون القانونية', 'Legal Affairs', 
+     N'مدير عام', 'General Manager', '101', 'essa.almgmnt', 0, 1),
+
+    ('EMP002', N'حمد محمد الكعبي', '0502345678', 'Hamad Mohammed Al-Kaabi', 
+     N'الإدارة العامة', 'General Administration', N'الموارد البشرية', 'Human Resources', 
+     N'رئيس قسم', 'Department Head', '102', 'hamad.hr', 0, 1),
+
+    ('EMP003', N'إبراهيم عبدالله القبيسي', '0503456789', 'Ibrahim Abdullah Al-Qubaisi', 
+     N'الإدارة العامة', 'General Administration', N'التكنولوجيا', 'Technology', 
+     N'مدير تقنية المعلومات', 'IT Manager', '103', 'ibrahim.tech', 0, 1),
+
+    ('EMP004', N'عادل حسن العبيدلي', '0504567890', 'Adel Hassan Al-Abedli', 
+     N'الإدارة العامة', 'General Administration', N'المشتريات', 'Procurement', 
+     N'رئيس قسم', 'Department Head', '104', 'adel.procurement', 0, 1),
+
+    ('EMP005', N'علي إبراهيم السادة', '0505678901', 'Ali Ibrahim Al-Sada', 
+     N'الإدارة العامة', 'General Administration', N'المبيعات', 'Sales', 
+     N'مدير مبيعات', 'Sales Manager', '105', 'ali.sales', 0, 1),
+
+    ('EMP006', N'علي الحمادي', '0506789012', 'Ali Al-Hammadi', 
+     N'الإدارة العامة', 'General Administration', N'الشؤون المالية', 'Finance', 
+     N'رئيس الشؤون المالية', 'Finance Head', '106', 'ali.finance', 0, 1),
+
+    ('EMP007', N'تركي عبدالله القرشي', '0507890123', 'Turki Abdullah Al-Qurashi', 
+     N'الإدارة العامة', 'General Administration', N'التدقيق', 'Auditing', 
+     N'مدير التدقيق الداخلي', 'Internal Audit Manager', '107', 'turki.audit', 0, 1),
+
+    ('EMP008', N'رئيس قسم الإتصالات', '0508901234', 'Head of Communications', 
+     N'الإدارة العامة', 'General Administration', N'الإتصالات', 'Communications', 
+     N'رئيس قسم', 'Department Head', '108', 'communications.head', 0, 1);
+GO
