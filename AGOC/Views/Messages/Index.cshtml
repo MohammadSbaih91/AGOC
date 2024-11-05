@@ -4,69 +4,98 @@
     ViewData["Title"] = "الرسائل";
 }
 
-<h2>الرسائل</h2>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرسائل</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        .bg-dark { background-color: #8a1538 !important; }
+        body { font-family: 'Droid Sans Arabic', sans-serif; background-color: #f8f9fa; direction: rtl; text-align: right; margin: 0; }
+        .container { background-color: white; border-radius: 10px; box-shadow: 0 40px 15px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 1000px; margin-top: 30px; }
+        .table th, .table td { text-align: right; font-size: 1.1rem; color: #8a1538; }
+        .btn-primary, .btn-info, .btn-warning, .btn-danger { font-weight: bold; border-radius: 5px; transition: transform 0.2s; margin: 0 3px; }
+        .btn-primary { background-color: #8a1538; color: white; }
+        .btn-info { background-color: #5bc0de; color: white; }
+        .btn-warning { background-color: #f0ad4e; color: white; }
+        .btn-danger { background-color: #d9534f; color: white; }
+        .btn:hover { opacity: 0.9; transform: scale(1.05); }
+        .pagination .page-link { color: #8a1538; }
+        .pagination .page-item.active .page-link { background-color: #8a1538; border-color: #8a1538; }
+    </style>
+</head>
+<body>
 
-<div class="text-right mb-3">
-    <a asp-action="Create" class="btn btn-primary">إنشاء رسالة جديدة</a>
-</div>
+    <div class="container">
+        <h2>الرسائل</h2>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>محتوى الرسالة</th>
-            <th>نوع الإرسال</th>
-            <th>القناة</th>
-            <th>وقت الإرسال المجدول</th>
-            <th>تاريخ الإنشاء</th>
-            <th>إجراءات</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Items.Any())
-        {
-            foreach (var message in Model.Items)
-            {
+        <div class="text-right mb-3">
+            <a asp-action="Create" class="btn btn-primary">إنشاء رسالة جديدة</a>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
                 <tr>
-                    <td>@message.MessageID</td>
-                    <td>@message.MessageContent</td>
-                    <td>@message.SendType</td>
-                    <td>@message.Channel</td>
-                    <td>@message.ScheduledSendTime?.ToString("g") ?? "غير متاح"</td>
-                    <td>@message.CreatedOn.ToString("g")</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@message.MessageID" class="btn btn-info btn-sm">تفاصيل</a>
-                        <a asp-action="Edit" asp-route-id="@message.MessageID" class="btn btn-warning btn-sm">تعديل</a>
-                        <form asp-action="DeleteConfirmed" asp-route-id="@message.MessageID" method="post" class="d-inline" onsubmit="return confirm('هل أنت متأكد أنك تريد حذف هذه الرسالة؟');">
-                            <button type="submit" class="btn btn-danger btn-sm">حذف</button>
-                        </form>
-                    </td>
+                    <th>#</th>
+                    <th>محتوى الرسالة</th>
+                    <th>نوع الإرسال</th>
+                    <th>القناة</th>
+                    <th>وقت الإرسال المجدول</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>إجراءات</th>
                 </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="7" class="text-center">لم يتم العثور على رسائل.</td>
-            </tr>
-        }
-    </tbody>
-</table>
+            </thead>
+            <tbody>
+                @if (Model.Items.Any())
+                {
+                    foreach (var message in Model.Items)
+                    {
+                        <tr>
+                            <td>@message.MessageID</td>
+                            <td>@message.MessageContent</td>
+                            <td>@message.SendType</td>
+                            <td>@message.Channel</td>
+                            <td>@message.ScheduledSendTime?.ToString("g") </td>
+                            <td>@message.CreatedOn.ToString("g")</td>
+                            <td class="text-nowrap">
+                                <a asp-action="Details" asp-route-id="@message.MessageID" class="btn btn-info btn-sm d-inline-block">تفاصيل</a>
+                                <a asp-action="Edit" asp-route-id="@message.MessageID" class="btn btn-warning btn-sm d-inline-block">تعديل</a>
+                                <form asp-action="DeleteConfirmed" asp-route-id="@message.MessageID" method="post" class="d-inline-block" onsubmit="return confirm('هل أنت متأكد أنك تريد حذف هذه الرسالة؟');">
+                                    <button type="submit" class="btn btn-danger btn-sm">حذف</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">لم يتم العثور على رسائل.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-<!-- Pagination Controls -->
-<nav aria-label="التنقل بين الصفحات">
-    <ul class="pagination justify-content-center">
-        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-            <a class="page-link" asp-action="@ViewData["PaginationAction"]" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@(Model.PageSize)">السابق</a>
-        </li>
-        @for (int i = 1; i <= Model.TotalPages; i++)
-        {
-            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                <a class="page-link" asp-action="@ViewData["PaginationAction"]" asp-route-pageNumber="@i" asp-route-pageSize="@(Model.PageSize)">@i</a>
-            </li>
-        }
-        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-            <a class="page-link" asp-action="@ViewData["PaginationAction"]" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@(Model.PageSize)">التالي</a>
-        </li>
-    </ul>
-</nav>
+        <!-- Pagination Controls -->
+        <nav aria-label="التنقل بين الصفحات">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="@ViewData["PaginationAction"]" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@(Model.PageSize)">السابق</a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                        <a class="page-link" asp-action="@ViewData["PaginationAction"]" asp-route-pageNumber="@i" asp-route-pageSize="@(Model.PageSize)">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="@ViewData["PaginationAction"]" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@(Model.PageSize)">التالي</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</body>
+</html>

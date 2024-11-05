@@ -4,68 +4,123 @@
     ViewData["Title"] = "تفاصيل الرسالة";
 }
 
-<h2>تفاصيل الرسالة</h2>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الرسالة</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Droid Sans Arabic', sans-serif;
+            background-color: #f8f9fa;
+            direction: rtl;
+            text-align: right;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 40px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin-top: 30px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .card-header {
+            background-color: #8a1538;
+            color: white;
+            font-weight: bold;
+        }
+        .table th, .table td {
+            text-align: right;
+            font-size: 1.1rem;
+            color: #8a1538;
+        }
+        .btn-secondary {
+            background-color: #8a1538;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: transform 0.2s;
+            margin-top: 15px;
+        }
+        .btn-secondary:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
 
-<div class="card">
-    <div class="card-header">
-        <h4>معلومات الرسالة</h4>
+    <div class="container">
+        <h2>تفاصيل الرسالة</h2>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>معلومات الرسالة</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">محتوى الرسالة</dt>
+                    <dd class="col-sm-9">@Model.MessageContent</dd>
+
+                    <dt class="col-sm-3">نوع الإرسال</dt>
+                    <dd class="col-sm-9">@Model.SendType</dd>
+
+                    <dt class="col-sm-3">القناة</dt>
+                    <dd class="col-sm-9">@Model.Channel</dd>
+
+                    <dt class="col-sm-3">وقت الإرسال المجدول</dt>
+                    <dd class="col-sm-9">@Model.ScheduledSendTime?.ToString("g") ?? "غير متاح"</dd>
+
+                    <dt class="col-sm-3">تاريخ الإنشاء</dt>
+                    <dd class="col-sm-9">@Model.CreatedOn.ToString("g")</dd>
+
+                    <dt class="col-sm-3">تم الإنشاء بواسطة</dt>
+                    <dd class="col-sm-9">@Model.CreatedBy</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Recipients List -->
+        <h4 class="mt-4">المستلمون</h4>
+        @if (Model.Recipients.Any())
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>رقم تعريف الموظف</th>
+                        <th>رقم الهاتف</th>
+                        <th>حالة الإرسال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var recipient in Model.Recipients)
+                    {
+                        <tr>
+                            <td>@recipient.EmployeeID</td>
+                            <td>@recipient.Mobile</td>
+                            <td>@recipient.StatusID</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>لا يوجد مستلمون مرتبطون بهذه الرسالة.</p>
+        }
+
+        <div class="mt-4">
+            <a asp-action="Index" class="btn btn-secondary">العودة إلى الرسائل</a>
+        </div>
     </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">محتوى الرسالة</dt>
-            <dd class="col-sm-9">@Model.MessageContent</dd>
 
-            <dt class="col-sm-3">نوع الإرسال</dt>
-            <dd class="col-sm-9">@Model.SendType</dd>
-
-            <dt class="col-sm-3">القناة</dt>
-            <dd class="col-sm-9">@Model.Channel</dd>
-
-            <dt class="col-sm-3">وقت الإرسال المجدول</dt>
-            <dd class="col-sm-9">@Model.ScheduledSendTime?.ToString("g") ?? "غير متاح"</dd>
-
-            <dt class="col-sm-3">تاريخ الإنشاء</dt>
-            <dd class="col-sm-9">@Model.CreatedOn.ToString("g")</dd>
-
-            <dt class="col-sm-3">تم الإنشاء بواسطة</dt>
-            <dd class="col-sm-9">@Model.CreatedBy</dd>
-        </dl>
-    </div>
-</div>
-
-<!-- Recipients List -->
-<h4 class="mt-4">المستلمون</h4>
-@if (Model.Recipients.Any())
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>رقم تعريف الموظف</th>
-                <th>رقم الهاتف</th>
-                <th>حالة الإرسال</th>
-                @*  <th>تاريخ الإرسال</th>
-            <th>رسالة الخطأ</th> *@
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var recipient in Model.Recipients)
-            {
-                <tr>
-                    <td>@recipient.EmployeeID</td>
-                    <td>@recipient.Mobile</td>
-                    <td>@recipient.StatusID</td>
-                    @*  <td>@recipient.SentOn?.ToString("g") ?? "غير متاح"</td>
-            <td>@recipient.ErrorMessage ?? "غير متاح"</td> *@
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>لا يوجد مستلمون مرتبطون بهذه الرسالة.</p>
-}
-
-<div class="mt-4">
-    <a asp-action="Index" class="btn btn-secondary">العودة إلى الرسائل</a>
-</div>
+</body>
+</html>
