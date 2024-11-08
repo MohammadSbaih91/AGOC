@@ -33,8 +33,8 @@ namespace AGOC.Middleware
 
                     if (context.User.Identity.IsAuthenticated && context.Request.Path.StartsWithSegments("/Account/Login"))
                     {
-                        _logger.LogInformation("User is already authenticated. Redirecting to Vehicles/Index.");
-                        context.Response.Redirect("/Vehicles/Index");
+                        _logger.LogInformation("User is already authenticated. Redirecting to AGOC/Index.");
+                        context.Response.Redirect("/AGOC/Index");
                         return;
                     }
 

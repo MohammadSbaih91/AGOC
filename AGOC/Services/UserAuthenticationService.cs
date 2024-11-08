@@ -11,9 +11,9 @@ namespace AGOC.Services
 {
     public class UserAuthenticationService : IUserAuthenticationService
     {
-        private readonly VehicleMsContext _context;
+        private readonly AGOCContext _context;
 
-        public UserAuthenticationService(VehicleMsContext context)
+        public UserAuthenticationService(AGOCContext context)
         {
             _context = context;
         }

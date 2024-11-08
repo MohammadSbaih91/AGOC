@@ -6,7 +6,7 @@ namespace AGOC.Repository
 {
     public class UsersRepository : RepositoryBase<User>, IUsersRepository
     {
-        public UsersRepository(VehicleMsContext vehicleMsContext) : base(vehicleMsContext)
+        public UsersRepository(AGOCContext AGOCContext) : base(AGOCContext)
         {
         }
     }

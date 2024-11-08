@@ -5,7 +5,7 @@ namespace AGOC.Repository.Repos
 {
     public class SmslogRepository : RepositoryBase<Smslog>, ISmslogRepository
     {
-        public SmslogRepository(VehicleMsContext vehicleMsContext) : base(vehicleMsContext)
+        public SmslogRepository(AGOCContext AGOCContext) : base(AGOCContext)
         {
         }
     }

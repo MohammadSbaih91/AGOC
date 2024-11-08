@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AGOC.Migrations
 {
-    [DbContext(typeof(VehicleMsContext))]
-    [Migration("20241104141347_InitialCreate")]
+    [DbContext(typeof(AGOCContext))]
+    [Migration("20241108224955_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -72,27 +72,33 @@ namespace AGOC.Migrations
 
                     b.Property<string>("Account")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("DepartmentName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("DepartmentNameEn")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("EmployeeCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("EmployeeNameEng")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("EmploymentStatusID")
                         .HasColumnType("int");
@@ -102,27 +108,33 @@ namespace AGOC.Migrations
 
                     b.Property<string>("JobTitle")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("JobTitleEn")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Mobile")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("PhoneExtension")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("SectionName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SectionNameEn")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("EmployeeID");
 
@@ -162,76 +174,6 @@ namespace AGOC.Migrations
                         .HasName("PK__LookupDe__3214EC07A608C4E9");
 
                     b.ToTable("LookupDepartment", (string)null);
-                });
-
-            modelBuilder.Entity("AGOC.Models.LookupVehicleStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__LookupVe__3214EC075DF57F74");
-
-                    b.ToTable("LookupVehicleStatus", (string)null);
-                });
-
-            modelBuilder.Entity("AGOC.Models.LookupViolationType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("ViolationType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__LookupVi__3214EC07397569D4");
-
-                    b.ToTable("LookupViolationType", (string)null);
                 });
 
             modelBuilder.Entity("AGOC.Models.Message", b =>
@@ -355,9 +297,6 @@ namespace AGOC.Migrations
                     b.Property<int>("MessageID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SendStatusID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("SentOn")
                         .HasColumnType("datetime2");
 
@@ -431,67 +370,6 @@ namespace AGOC.Migrations
                     b.HasKey("TemplateID");
 
                     b.ToTable("MessageTemplates");
-                });
-
-            modelBuilder.Entity("AGOC.Models.Parking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<DateTime?>("Date")
-                        .HasColumnType("datetime");
-
-                    b.Property<int?>("EmployeeCode")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int")
-                        .HasColumnName("EmployeeID");
-
-                    b.Property<string>("EmployeeName")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LicensePlateNumber")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("ParkingSpotNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int")
-                        .HasColumnName("VehicleID");
-
-                    b.HasKey("Id")
-                        .HasName("PK__Parking__43E7B631857E0F3C");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("Parking", (string)null);
                 });
 
             modelBuilder.Entity("AGOC.Models.Role", b =>
@@ -586,75 +464,6 @@ namespace AGOC.Migrations
                         .HasName("PK__SMSLogs__3214EC0788020288");
 
                     b.ToTable("SMSLogs", (string)null);
-                });
-
-            modelBuilder.Entity("AGOC.Models.TrafficViolation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int")
-                        .HasColumnName("EmployeeID");
-
-                    b.Property<int?>("EmployeeNumber")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("FineAmount")
-                        .HasColumnType("decimal(10, 2)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("IsPaid")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LicensePlateNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("LookupViolationTypeId")
-                        .HasColumnType("int")
-                        .HasColumnName("LookupViolationTypeID");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int")
-                        .HasColumnName("VehicleID");
-
-                    b.Property<DateOnly?>("ViolationDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("ViolationType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__TrafficV__18B6DC285B07D776");
-
-                    b.HasIndex("LookupViolationTypeId");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("TrafficViolation", (string)null);
                 });
 
             modelBuilder.Entity("AGOC.Models.User", b =>
@@ -807,333 +616,6 @@ namespace AGOC.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("AGOC.Models.Vehicle", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Brand")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("BrandId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Color")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateOnly?>("ConditionDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LicensePlateNumber")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Model")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("ModelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("PurchaseDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("SerialNumber")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("StatusId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusText")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("VehicleTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VehicleTypeText")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Year")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__Vehicle__476B54B2A49E8C25");
-
-                    b.HasIndex("StatusId");
-
-                    b.ToTable("Vehicle", (string)null);
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehicleCategoryLookup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<int>("VehiclesLookupDetailId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id")
-                        .HasName("PK__VehicleC__3214EC0719630214");
-
-                    b.HasIndex("VehiclesLookupDetailId");
-
-                    b.ToTable("VehicleCategoryLookups");
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehicleHandover", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<int?>("EmployeeCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EmployeeDepartment")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<int?>("EmployeeDepartmentId")
-                        .HasColumnType("int")
-                        .HasColumnName("EmployeeDepartmentID");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int")
-                        .HasColumnName("EmployeeID");
-
-                    b.Property<string>("EmployeeName")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("EmployeeTitle")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<DateOnly?>("HandoverDate")
-                        .HasColumnType("date");
-
-                    b.Property<int?>("IsApproved")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("ReturnDate")
-                        .HasColumnType("date");
-
-                    b.Property<int?>("StatusId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusText")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int")
-                        .HasColumnName("VehicleID");
-
-                    b.HasKey("Id")
-                        .HasName("PK__VehicleH__DB2A1F61F31C71A1");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("VehicleHandover", (string)null);
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehicleStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<int?>("LookupVehicleStatusId")
-                        .HasColumnType("int")
-                        .HasColumnName("LookupVehicleStatusID");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateOnly>("StatusDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int")
-                        .HasColumnName("VehicleID");
-
-                    b.HasKey("Id")
-                        .HasName("PK__VehicleS__3214EC07E379DB4A");
-
-                    b.ToTable("VehicleStatus", (string)null);
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehiclesLookupDetaile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("VehiclesLookupMainDescription")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("VehiclesLookupMainId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id")
-                        .HasName("PK__Vehicles__3214EC070B6A48D4");
-
-                    b.HasIndex("VehiclesLookupMainId");
-
-                    b.ToTable("VehiclesLookupDetaile", (string)null);
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehiclesLookupMain", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime");
-
-                    b.HasKey("Id")
-                        .HasName("PK__Vehicles__3214EC0787836D8F");
-
-                    b.ToTable("VehiclesLookupMain", (string)null);
-                });
-
             modelBuilder.Entity("AGOC.Models.Message", b =>
                 {
                     b.HasOne("AGOC.Models.MessageTemplate", "MessageTemplate")
@@ -1182,41 +664,15 @@ namespace AGOC.Migrations
                     b.HasOne("AGOC.Models.MessageStatus", "Status")
                         .WithMany()
                         .HasForeignKey("StatusID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_MessageRecipients_MessageStatuses_StatusID");
 
                     b.Navigation("Employee");
 
                     b.Navigation("Message");
 
                     b.Navigation("Status");
-                });
-
-            modelBuilder.Entity("AGOC.Models.Parking", b =>
-                {
-                    b.HasOne("AGOC.Models.Vehicle", "Vehicle")
-                        .WithMany("Parkings")
-                        .HasForeignKey("VehicleId")
-                        .HasConstraintName("FK_Parking_Vehicle1");
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("AGOC.Models.TrafficViolation", b =>
-                {
-                    b.HasOne("AGOC.Models.LookupViolationType", "LookupViolationType")
-                        .WithMany("TrafficViolations")
-                        .HasForeignKey("LookupViolationTypeId")
-                        .HasConstraintName("FK_TrafficViolation_LookupViolationType");
-
-                    b.HasOne("AGOC.Models.Vehicle", "Vehicle")
-                        .WithMany("TrafficViolations")
-                        .HasForeignKey("VehicleId")
-                        .HasConstraintName("FK_TrafficViolation_Vehicle");
-
-                    b.Navigation("LookupViolationType");
-
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("AGOC.Models.UserPreference", b =>
@@ -1247,59 +703,6 @@ namespace AGOC.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AGOC.Models.Vehicle", b =>
-                {
-                    b.HasOne("AGOC.Models.LookupVehicleStatus", "Status")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("StatusId")
-                        .HasConstraintName("FK_Vehicle_LookupVehicleStatus");
-
-                    b.Navigation("Status");
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehicleCategoryLookup", b =>
-                {
-                    b.HasOne("AGOC.Models.VehiclesLookupDetaile", "VehiclesLookupDetail")
-                        .WithMany("VehicleCategoryLookups")
-                        .HasForeignKey("VehiclesLookupDetailId")
-                        .IsRequired()
-                        .HasConstraintName("FK_VehicleCategoryLookups_VehiclesLookupDetaile");
-
-                    b.Navigation("VehiclesLookupDetail");
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehicleHandover", b =>
-                {
-                    b.HasOne("AGOC.Models.Vehicle", "Vehicle")
-                        .WithMany("VehicleHandovers")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__VehicleHa__Vehic__29572725");
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehiclesLookupDetaile", b =>
-                {
-                    b.HasOne("AGOC.Models.VehiclesLookupMain", "VehiclesLookupMain")
-                        .WithMany("VehiclesLookupDetailes")
-                        .HasForeignKey("VehiclesLookupMainId")
-                        .HasConstraintName("FK_VehiclesLookupDetaile_VehiclesLookupMain");
-
-                    b.Navigation("VehiclesLookupMain");
-                });
-
-            modelBuilder.Entity("AGOC.Models.LookupVehicleStatus", b =>
-                {
-                    b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("AGOC.Models.LookupViolationType", b =>
-                {
-                    b.Navigation("TrafficViolations");
-                });
-
             modelBuilder.Entity("AGOC.Models.Message", b =>
                 {
                     b.Navigation("Recipients");
@@ -1313,25 +716,6 @@ namespace AGOC.Migrations
             modelBuilder.Entity("AGOC.Models.User", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("AGOC.Models.Vehicle", b =>
-                {
-                    b.Navigation("Parkings");
-
-                    b.Navigation("TrafficViolations");
-
-                    b.Navigation("VehicleHandovers");
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehiclesLookupDetaile", b =>
-                {
-                    b.Navigation("VehicleCategoryLookups");
-                });
-
-            modelBuilder.Entity("AGOC.Models.VehiclesLookupMain", b =>
-                {
-                    b.Navigation("VehiclesLookupDetailes");
                 });
 #pragma warning restore 612, 618
         }

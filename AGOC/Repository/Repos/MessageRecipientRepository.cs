@@ -5,6 +5,6 @@ namespace AGOC.Repository.Repos
 {
     public class MessageRecipientRepository : RepositoryBase<MessageRecipient>, IMessageRecipientRepository
     {
-        public MessageRecipientRepository(VehicleMsContext context) : base(context) { }
+        public MessageRecipientRepository(AGOCContext context) : base(context) { }
     }
 }

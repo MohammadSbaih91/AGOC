@@ -38,7 +38,7 @@ namespace AGOC.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                _logger.LogInformation("User {Username} is already authenticated. Redirecting to Vehicles Index.", _username);
+                _logger.LogInformation("User {Username} is already authenticated. Redirecting to  Index.", _username);
                 return RedirectToAction("Index", "Messages");
             }
 

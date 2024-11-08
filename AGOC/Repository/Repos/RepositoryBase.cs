@@ -7,10 +7,10 @@ namespace AGOC.Repository.Repos
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        public VehicleMsContext _repositoryContext { get; set; }
+        public AGOCContext _repositoryContext { get; set; }
         internal DbSet<T> DbSet { get; set; }
 
-        public RepositoryBase(VehicleMsContext PortalDBContext)
+        public RepositoryBase(AGOCContext PortalDBContext)
         {
             _repositoryContext = PortalDBContext;
             DbSet = _repositoryContext.Set<T>();

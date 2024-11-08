@@ -7,9 +7,9 @@ namespace AGOC.Repository.Repos
 {
     public class EmployeeInfoRepository : RepositoryBase<EmployeeInfo>, IEmployeeInfoRepository
     {
-        private readonly VehicleMsContext _context;
+        private readonly AGOCContext _context;
 
-        public EmployeeInfoRepository(VehicleMsContext context) : base(context)
+        public EmployeeInfoRepository(AGOCContext context) : base(context)
         {
             _context = context;
         }

@@ -1,12 +1,10 @@
 ﻿using AGOC.Domain;
 using AGOC.Domain.Interfaces;
-using AGOC.Domain.Manager;
 using AGOC.Domain.Managers;
 using AGOC.Models;
 using AGOC.Repository.Interfaces;
 using AGOC.Repository.Repos;
 using AGOC.Services.Interface;
-using AGOC.Services.Managers;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -31,13 +29,13 @@ namespace AGOC.Services
         //public static void ConfigureSqlServerContext(this IServiceCollection services, IConfiguration config)
         //{
         //    var connectionString = config.GetConnectionString("DefaultConnection");
-        //    services.AddDbContext<VehicleMsContext>(options =>
+        //    services.AddDbContext<AGOCContext>(options =>
         //        options.UseSqlServer(connectionString));
         //}
         public static void ConfigureSqlServerContext(this IServiceCollection services, IConfiguration config)
         {
             var connectionString = config.GetConnectionString("AGOCDatabase");  // Use the new AGOC connection string
-            services.AddDbContext<VehicleMsContext>(options =>
+            services.AddDbContext<AGOCContext>(options =>
                 options.UseSqlServer(connectionString));
         }
 
@@ -69,16 +67,6 @@ namespace AGOC.Services
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Register managers as scoped dependencies
-            services.AddScoped<IVehicleManager, VehicleManager>();
-            services.AddScoped<IParkingManager, ParkingManager>();
-            services.AddScoped<ITrafficViolationManager, TrafficViolationManager>();
-            services.AddScoped<IVehicleHandoverManager, VehicleHandoverManager>();
-            services.AddScoped<IVehicleStatusManager, VehicleStatusManager>();
-            services.AddScoped<ILookupViolationTypeManager, LookupViolationTypeManager>();
-            services.AddScoped<ILookupVehicleStatusManager, LookupVehicleStatusManager>();
-            services.AddScoped<IVehiclesLookupDetaileManager, VehiclesLookupDetaileManager>();
-            services.AddScoped<IVehiclesLookupMainManager, VehiclesLookupMainManager>();
-            services.AddScoped<IVehicleCategoryLookupManager, VehicleCategoryLookupManager>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUsersManager, UsersManager>();
             services.AddScoped<ISmsService, SmsService>();
